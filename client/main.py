@@ -1,5 +1,5 @@
-from internal.memwrapper.memwrapper import Memory
-import internal.wss as wss
+from client.internal.memwrapper.memwrapper import Memory
+import client.internal.wss as wss
 import threading
 
 

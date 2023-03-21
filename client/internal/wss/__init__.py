@@ -20,7 +20,7 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-from internal.wss.route import router
+from client.internal.wss.route import router
 app = FastAPI()
 app.include_router(router)
 
