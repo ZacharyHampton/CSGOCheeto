@@ -2,3 +2,6 @@ uvicorn[standard]
 memprocfs
 fastapi
 pymem
+colorama
+requests
+tabulate
