@@ -18,16 +18,15 @@ def main_game_thread():
         ]
         print(tabulate(table, ("Name", "Pointer / Offset"), "pretty", showindex=True))
 
-    client = memory.module_from_name("client.dll")
-    engine = memory.module_from_name("engine.dll")
+    offsets.client = memory.module_from_name("client.dll")
+    offsets.engine = memory.module_from_name("engine.dll")
 
     while True:
         time.sleep(0.0025)
-        client_state = memory.read_ptr(engine + offsets.dwClientState)
-        if (engineObject := Engine(client_state)).is_in_game():
+        if (engineObject := Engine()).is_in_game():
             #: cannot get local player / entity
-            if localPlayer := Entity.get_client_entity(engineObject.get_local_player()):
-                print("[+] Found local player: 0x%X, health: %d\n" % (localPlayer.address, localPlayer.get_health()))
+            localPlayer = engineObject.get_local_player()
+            print("[+] Found local player: 0x%X, health: %d\n" % (localPlayer.address, localPlayer.get_health()))
         else:
             time.sleep(0.5)
             print("[+] Waiting for game to start...")

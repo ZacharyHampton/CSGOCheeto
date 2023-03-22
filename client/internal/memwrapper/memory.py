@@ -39,6 +39,8 @@ class Memory:
             return TypeConversion(self.process.read_bytes(address, size))
 
     def read_ptr(self, address: int, ignore_null: bool = False):
+        #: CS:GO uses 32-bit pointers
+
         if (pointer := int(self.read(address, datatype=c_uint32))) != 0x0:
             return pointer
         elif ignore_null:

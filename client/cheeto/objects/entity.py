@@ -4,5 +4,5 @@ from client.cheeto.globals import memory, offsets
 
 class Entity:
     @staticmethod
-    def get_client_entity(index):
-        return Player(memory.read_ptr(offsets.dwEntityList + index * 0x10))
+    def get_client_entity(index) -> Player:
+        return Player(memory.read_ptr(offsets.client + offsets.dwEntityList + 0x10 * index))
