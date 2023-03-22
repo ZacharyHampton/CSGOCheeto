@@ -23,10 +23,11 @@ def main_game_thread():
 
     while True:
         time.sleep(0.0025)
-        if (engineObject := Engine()).is_in_game():
-            #: cannot get local player / entity
-            localPlayer = engineObject.get_local_player()
-            print("[+] Found local player: 0x%X, health: %d\n" % (localPlayer.address, localPlayer.get_health()))
+
+        engine = Engine()
+        if engine.is_in_game():
+            localPlayer = engine.get_local_player()
+            print("[+] Found local player: 0x%X, health: %d, position: %s" % (localPlayer.address, localPlayer.get_health(), localPlayer.get_bone_pos(6)))
         else:
             time.sleep(0.5)
             print("[+] Waiting for game to start...")

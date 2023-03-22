@@ -7,6 +7,9 @@ class Player:
     def __init__(self, address):
         self.address = address
 
+    def is_dormant(self):
+        return memory.read_ptr(self.address + offsets.m_bDormant)
+
     def get_team_num(self):
         return memory.read_ptr(self.address + offsets.m_iTeamNum)
 
