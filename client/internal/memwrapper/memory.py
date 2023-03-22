@@ -7,8 +7,7 @@ from client.internal.memwrapper.file_conversion import TypeConversion
 from client.internal.memwrapper.exceptions import NullPointerError, MissingRequiredFieldError
 import ctypes
 import _ctypes
-from ctypes import c_uint64
-
+from ctypes import c_uint32
 
 
 class Memory:
@@ -31,7 +30,7 @@ class Memory:
             except (RuntimeError, pymem.exception.ProcessNotFound):
                 time.sleep(1)
 
-    def read(self, address: int, datatype: type(_ctypes._SimpleCData)) -> TypeConversion:  #: TO-DO: Add support for providing a type to allow for automatic size calculation
+    def read(self, address: int, datatype: type(_ctypes._SimpleCData)) -> TypeConversion:
         size = ctypes.sizeof(datatype)
 
         if self.dma:
@@ -39,9 +38,11 @@ class Memory:
         else:
             return TypeConversion(self.process.read_bytes(address, size))
 
-    def read_ptr(self, address: int):
-        if (pointer := int.from_bytes(self.read(address, datatype=c_uint64).bytes, 'little')) != 0x0:
+    def read_ptr(self, address: int, ignore_null: bool = False):
+        if (pointer := int(self.read(address, datatype=c_uint32))) != 0x0:
             return pointer
+        elif ignore_null:
+            return 0x0
         else:
             raise NullPointerError(f"Null pointer at address {hex(address)} with a value of {hex(pointer)}")
 
