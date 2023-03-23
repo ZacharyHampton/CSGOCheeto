@@ -1,3 +1,4 @@
+import ctypes
 import os
 from colorama import Fore
 from tabulate import tabulate
@@ -7,7 +8,7 @@ from client.cheeto.objects.engine import Engine
 from client.cheeto.objects.entity import Entity
 from client.internal.memwrapper.exceptions import NullPointerError
 from client.cheeto.objects.player import Player
-from ctypes import c_int32
+from ctypes import c_int32, c_int64
 
 
 def main_game_thread():
@@ -29,11 +30,19 @@ def main_game_thread():
     offsets.client = memory.module_from_name("client.dll")
     offsets.engine = memory.module_from_name("engine.dll")
 
+    previously_in_game = False
+
     while True:
         time.sleep(0.0025)
 
         engine = Engine()
         if engine.is_in_game():
+            if not previously_in_game:
+                log("[+] Game started!")
+                previously_in_game = True
+                #: TODO: send websocket that game has started with map information
+
+            #: Get all players in game
             localPlayer = engine.get_local_player()
             for index in range(0, engine.get_max_clients()):
                 try:
@@ -42,6 +51,8 @@ def main_game_thread():
                     continue
 
                 isLocalPlayer = player.address == localPlayer.address
+                name = str(memory.read(engine.get_player_info(index) + 0x10, ctypes.create_string_buffer(128)))
+                steam_id = str(memory.read(engine.get_player_info(index) + 0x94, ctypes.create_string_buffer(20)))
 
                 if (health := player.get_health()) <= 0:
                     debug('[-] Skipping player 0x%X with health %d' % (player.address, health))
@@ -55,14 +66,15 @@ def main_game_thread():
                     debug('[-] Skipping player 0x%X with dormant %d' % (player.address, dormant))
                     continue
 
-                print("[+] Found player: 0x%X, health: %d, position: %s, isLocalPlayer: %s" % (player.address, health, player.get_bone_pos(6), isLocalPlayer))
-
-
-            """localPlayer = engine.get_local_player()
-            print("[+] Found local player: 0x%X, health: %d, position: %s" % (localPlayer.address, localPlayer.get_health(), localPlayer.get_bone_pos(6)))"""
+                log("[+] Found player: 0x%X, health: %d, position: %s, isLocalPlayer: %s" % (player.address, health, player.get_bone_pos(6), isLocalPlayer))
         else:
+            if previously_in_game:
+                log("[+] Game ended!")
+                previously_in_game = False
+                #: TODO: send websocket that game has ended
+
             time.sleep(0.5)
-            print("[+] Waiting for game to start...")
+            log("[+] Waiting for game to start...")
             continue
 
 

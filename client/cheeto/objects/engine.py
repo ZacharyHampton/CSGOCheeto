@@ -11,6 +11,12 @@ class Engine:
         localPlayerIndex = memory.read_ptr(self.clientState + offsets.dwClientState_GetLocalPlayer, ignore_null=True)
         return Entity.get_client_entity(localPlayerIndex)
 
+    def get_player_info(self, index):
+        player_info_table = memory.read_ptr(self.clientState + offsets.dwClientState_PlayerInfo)
+        x = memory.read_ptr_chain(player_info_table, [0x40, 0xC])
+        return memory.read_ptr(x + 0x28 + 0x34 * index)
+
+
     """@staticmethod
     def get_view_angles():
         return mem.read_vec3(nv.dwClientState + nv.dwViewAngles)"""
