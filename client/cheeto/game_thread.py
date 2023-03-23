@@ -11,6 +11,13 @@ from ctypes import c_int32
 
 
 def main_game_thread():
+    def debug(*args):
+        if os.getenv("DEBUG"):
+            print(' '.join(map(str, args)))
+
+    def log(*args):
+        print(' '.join(map(str, args)))
+
     if os.getenv("DEBUG"):
         table = [
             [Fore.LIGHTCYAN_EX + k, Fore.LIGHTWHITE_EX + hex(v).upper()]
@@ -37,12 +44,15 @@ def main_game_thread():
                 isLocalPlayer = player.address == localPlayer.address
 
                 if (health := player.get_health()) <= 0:
+                    debug('[-] Skipping player 0x%X with health %d' % (player.address, health))
                     continue
 
                 if lifestate := player.get_life_state():
+                    debug('[-] Skipping player 0x%X with lifestate %d' % (player.address, lifestate))
                     continue
 
                 if dormant := player.is_dormant():
+                    debug('[-] Skipping player 0x%X with dormant %d' % (player.address, dormant))
                     continue
 
                 print("[+] Found player: 0x%X, health: %d, position: %s, isLocalPlayer: %s" % (player.address, health, player.get_bone_pos(6), isLocalPlayer))
