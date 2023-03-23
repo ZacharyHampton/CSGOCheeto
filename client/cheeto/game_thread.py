@@ -43,7 +43,12 @@ def main_game_thread():
                 #: TODO: send websocket that game has started with map information
 
             #: Get all players in game
-            localPlayer = engine.get_local_player()
+            try:
+                localPlayer = engine.get_local_player()
+            except NullPointerError:
+                debug("[-] Local player is null")
+                continue
+
             for index in range(0, engine.get_max_clients()):
                 try:
                     player = Entity.get_client_entity(index)
@@ -51,22 +56,22 @@ def main_game_thread():
                     continue
 
                 isLocalPlayer = player.address == localPlayer.address
-                name = str(memory.read(engine.get_player_info(index) + 0x10, ctypes.create_string_buffer(128)))
-                steam_id = str(memory.read(engine.get_player_info(index) + 0x94, ctypes.create_string_buffer(20)))
-
-                if (health := player.get_health()) <= 0:
-                    debug('[-] Skipping player 0x%X with health %d' % (player.address, health))
-                    continue
-
-                if lifestate := player.get_life_state():
-                    debug('[-] Skipping player 0x%X with lifestate %d' % (player.address, lifestate))
-                    continue
 
                 if dormant := player.is_dormant():
                     debug('[-] Skipping player 0x%X with dormant %d' % (player.address, dormant))
                     continue
 
-                log("[+] Found player: 0x%X, health: %d, position: %s, isLocalPlayer: %s" % (player.address, health, player.get_bone_pos(6), isLocalPlayer))
+                if not player.is_valid():
+                    debug('[-] Skipping player 0x%X with health %d and life state %d' % (
+                        player.address, player.get_health(), player.get_life_state()))
+                    continue
+
+                name = str(memory.read(engine.get_player_info(index) + 0x10, ctypes.create_string_buffer(128)))
+                steam_id = str(memory.read(engine.get_player_info(index) + 0x94, ctypes.create_string_buffer(20)))
+                health = player.get_health()
+
+                log("[+] Found player: 0x%X, health: %d, position: %s, name: %s" % (
+                    player.address, health, player.get_bone_pos(10), name))
         else:
             if previously_in_game:
                 log("[+] Game ended!")
@@ -76,5 +81,3 @@ def main_game_thread():
             time.sleep(0.5)
             log("[+] Waiting for game to start...")
             continue
-
-
