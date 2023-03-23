@@ -1,5 +1,5 @@
 from client.cheeto.globals import memory, offsets
-from ctypes import c_float, c_int32
+from ctypes import c_float, c_int32, c_byte
 from client.internal.objects.vector3 import Vector3
 
 
@@ -8,7 +8,7 @@ class Player:
         self.address = address
 
     def is_dormant(self):
-        return memory.read_ptr(self.address + offsets.m_bDormant)
+        return int(memory.read(self.address + offsets.m_bDormant, c_byte))
 
     def get_team_num(self):
         return memory.read_ptr(self.address + offsets.m_iTeamNum)
@@ -17,7 +17,7 @@ class Player:
         return int(memory.read(self.address + offsets.m_iHealth, c_int32))
 
     def get_life_state(self):
-        return memory.read_ptr(self.address + offsets.m_lifeState)
+        return int(memory.read(self.address + offsets.m_lifeState, c_byte))
 
     def get_tick_count(self):
         return memory.read_ptr(self.address + offsets.m_nTickBase)

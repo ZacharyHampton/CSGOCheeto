@@ -5,6 +5,7 @@ import time
 from client.cheeto.globals import memory, offsets
 from client.cheeto.objects.engine import Engine
 from client.cheeto.objects.entity import Entity
+from client.internal.memwrapper.exceptions import NullPointerError
 from client.cheeto.objects.player import Player
 from ctypes import c_int32
 
@@ -27,7 +28,28 @@ def main_game_thread():
         engine = Engine()
         if engine.is_in_game():
             localPlayer = engine.get_local_player()
-            print("[+] Found local player: 0x%X, health: %d, position: %s" % (localPlayer.address, localPlayer.get_health(), localPlayer.get_bone_pos(6)))
+            for index in range(0, engine.get_max_clients()):
+                try:
+                    player = Entity.get_client_entity(index)
+                except NullPointerError:
+                    continue
+
+                isLocalPlayer = player.address == localPlayer.address
+
+                if (health := player.get_health()) <= 0:
+                    continue
+
+                if lifestate := player.get_life_state():
+                    continue
+
+                if dormant := player.is_dormant():
+                    continue
+
+                print("[+] Found player: 0x%X, health: %d, position: %s, isLocalPlayer: %s" % (player.address, health, player.get_bone_pos(6), isLocalPlayer))
+
+
+            """localPlayer = engine.get_local_player()
+            print("[+] Found local player: 0x%X, health: %d, position: %s" % (localPlayer.address, localPlayer.get_health(), localPlayer.get_bone_pos(6)))"""
         else:
             time.sleep(0.5)
             print("[+] Waiting for game to start...")
