@@ -56,8 +56,13 @@ class Memory:
         return address
 
     def module_from_name(self, module_name: str):
-        if self.dma:
-            return self.process.module(module_name).base
-        else:
-            return pymem.process.module_from_name(self.process.process_handle, module_name).lpBaseOfDll
+        while True:
+            try:
+                if self.dma:
+                    return self.process.module(module_name).base
+                else:
+                    return pymem.process.module_from_name(self.process.process_handle, module_name).lpBaseOfDll
+            except AttributeError:
+                time.sleep(1)
+                continue
 

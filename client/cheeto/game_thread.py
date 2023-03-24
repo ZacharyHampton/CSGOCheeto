@@ -12,6 +12,7 @@ from client.cheeto.models.packet import Packet
 from client.cheeto.models.player import Player
 from client.cheeto.models.map import Map
 from client.cheeto.models.status import Status
+import asyncio
 
 
 def main_game_thread():
@@ -47,10 +48,10 @@ def main_game_thread():
                 log("[+] Game started!")
                 previously_in_game = True
 
-                manager.broadcast(Packet(
+                asyncio.run(manager.broadcast(Packet(
                     map=Map(name=engine.get_map_name()),
                     status=Status(status="game_started")
-                ))
+                )))
 
             try:
                 localPlayer = engine.get_local_player()
@@ -96,7 +97,7 @@ def main_game_thread():
 
                 players_to_send = []
 
-                if steam_id not in players:
+                if steam_id not in players.keys():
                     log("[+] Found player: 0x%X, health: %d, position: %s, name: %s" % (
                         player.address, health, player.get_bone_pos(10), name))
 
@@ -115,18 +116,18 @@ def main_game_thread():
                         players_to_send.append(players[steam_id])
 
                 if len(players_to_send) > 0:
-                    manager.broadcast(Packet(
+                    asyncio.run(manager.broadcast(Packet(
                         players=players_to_send,
                         status=Status(status="players_updated")
-                    ))
+                    )))
         else:
             if previously_in_game:
                 log("[+] Game ended!")
                 previously_in_game = False
 
-                manager.broadcast(Packet(
+                asyncio.run(manager.broadcast(Packet(
                     status=Status(status="game_ended")
-                ))
+                )))
                 players = {}
 
             time.sleep(0.5)

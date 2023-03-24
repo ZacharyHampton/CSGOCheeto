@@ -26,8 +26,10 @@ class Player:
         return memory.read_ptr(self.address + offsets.m_iShotsFired)
 
     def get_weapon(self):
+        #: bugs sometimes
+
         a0 = memory.read_ptr(self.address + offsets.m_hActiveWeapon)
-        return memory.read_ptr(offsets.dwEntityList + ((a0 & 0xFFF) - 1) * 0x10)
+        return memory.read_ptr(offsets.client + offsets.dwEntityList + ((a0 & 0xFFF) - 1) * 0x10)
 
     def get_weapon_id(self):
         return memory.read_ptr(self.get_weapon() + offsets.m_iItemDefinitionIndex)
