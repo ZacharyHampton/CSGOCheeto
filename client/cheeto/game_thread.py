@@ -127,6 +127,7 @@ def main_game_thread():
                 manager.broadcast(Packet(
                     status=Status(status="game_ended")
                 ))
+                players = {}
 
             time.sleep(0.5)
             log("[+] Waiting for game to start...")
