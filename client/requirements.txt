@@ -5,3 +5,4 @@ pymem
 colorama
 requests
 tabulate
+pydantic

@@ -32,6 +32,9 @@ class Player:
     def get_weapon_id(self):
         return memory.read_ptr(self.get_weapon() + offsets.m_iItemDefinitionIndex)
 
+    def get_team_number(self):
+        return int(memory.read_ptr(self.address + offsets.m_iTeamNum))
+
     """def get_origin(self):
         return mem.read_vec3(self.address + offsets.m_vecOrigin)
 
@@ -51,3 +54,7 @@ class Player:
             float(memory.read(a1 + a0 + 0x1C, c_float)),
             float(memory.read(a1 + a0 + 0x2C, c_float))
         )
+
+    def is_valid(self):
+        health = self.get_health()
+        return self.address != 0 and self.get_life_state() == 0 and 0 < health < 1338
