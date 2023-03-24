@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket
 import uvicorn
+from client.cheeto.models.packet import Packet
 
 
 class ConnectionManager:
@@ -13,9 +14,9 @@ class ConnectionManager:
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
 
-    async def broadcast(self, message: str):
+    async def broadcast(self, packet: Packet):
         for connection in self.active_connections:
-            await connection.send_text(message)
+            await connection.send_json(packet.json())
 
 
 manager = ConnectionManager()

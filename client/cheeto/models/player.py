@@ -9,3 +9,4 @@ class Player(BaseModel):
     health: int
     position: Vector3
     weapon_id: int
+    isLocalPlayer: bool

@@ -32,6 +32,9 @@ class Player:
     def get_weapon_id(self):
         return memory.read_ptr(self.get_weapon() + offsets.m_iItemDefinitionIndex)
 
+    def get_team_number(self):
+        return int(memory.read_ptr(self.address + offsets.m_iTeamNum))
+
     """def get_origin(self):
         return mem.read_vec3(self.address + offsets.m_vecOrigin)
 
