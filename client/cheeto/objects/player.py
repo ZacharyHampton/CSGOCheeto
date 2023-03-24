@@ -58,5 +58,5 @@ class Player:
         )
 
     def is_valid(self):
-        health = self.get_health()
-        return self.address != 0 and self.get_life_state() == 0 and 0 < health < 1338
+        #: health = self.get_health()
+        return self.address != 0 and self.get_life_state() == 0  #: and 0 < health < 1338
