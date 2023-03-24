@@ -112,7 +112,7 @@ def main_game_thread():
                     players[steam_id].name = name
                     players[steam_id].team = player.get_team_number()
 
-                    if previous_player != players[steam_id]:
+                    if previous_player.__dict__ != players[steam_id].__dict__:
                         players_to_send.append(players[steam_id])
 
                 if len(players_to_send) > 0:
