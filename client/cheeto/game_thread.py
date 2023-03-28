@@ -12,6 +12,7 @@ from client.cheeto.models.packet import Packet
 from client.cheeto.models.player import Player
 from client.cheeto.models.map import Map
 from client.cheeto.models.status import Status
+import asyncio
 
 
 def main_game_thread():
@@ -47,10 +48,10 @@ def main_game_thread():
                 log("[+] Game started!")
                 previously_in_game = True
 
-                manager.broadcast(Packet(
+                asyncio.run(manager.broadcast(Packet(
                     map=Map(name=engine.get_map_name()),
                     status=Status(status="game_started")
-                ))
+                )))
 
             try:
                 localPlayer = engine.get_local_player()
@@ -59,6 +60,7 @@ def main_game_thread():
                 continue
 
             #: Get all players in game
+            players_to_send = []
             for index in range(0, engine.get_max_clients()):
                 try:
                     player = Entity.get_client_entity(index)
@@ -84,49 +86,58 @@ def main_game_thread():
                     name = ' '.join([steam_id, name])
                     steam_id = name
 
+                try:
+                    weapon_id = player.get_weapon_id()
+                except NullPointerError:
+                    weapon_id = 0
+
+                team = player.get_team_number()
+                position = player.get_bone_pos(10)
+
                 packet_player = Player(
                         steam_id=steam_id,
                         name=name,
-                        team=player.get_team_number(),
+                        team=team,
                         health=health,
-                        position=player.get_bone_pos(10),
-                        weapon_id=player.get_weapon_id(),
+                        position=position,
+                        weapon_id=weapon_id,
                         isLocalPlayer=isLocalPlayer
                     )
 
-                players_to_send = []
-
-                if steam_id not in players:
+                if steam_id not in players.keys():
                     log("[+] Found player: 0x%X, health: %d, position: %s, name: %s" % (
-                        player.address, health, player.get_bone_pos(10), name))
+                        player.address, health, position, name))
 
                     players[steam_id] = packet_player
                     players_to_send.append(packet_player)
                 else:
-                    previous_player = players[steam_id]
+                    previous_player = players[steam_id].copy()
 
                     players[steam_id].health = health
-                    players[steam_id].position = player.get_bone_pos(10)
-                    players[steam_id].weapon_id = player.get_weapon_id()
+                    players[steam_id].position = packet_player.position
+                    players[steam_id].weapon_id = weapon_id
                     players[steam_id].name = name
-                    players[steam_id].team = player.get_team_number()
+                    players[steam_id].team = packet_player.team
 
-                    if previous_player != players[steam_id]:
+                    if previous_player.dict() != players[steam_id].dict():
+                        log("[+] Player updated: 0x%X, health: %d, position: %s, name: %s" % (
+                            player.address, health, position, name))
                         players_to_send.append(players[steam_id])
 
-                if len(players_to_send) > 0:
-                    manager.broadcast(Packet(
-                        players=players_to_send,
-                        status=Status(status="players_updated")
-                    ))
+            if len(players_to_send) > 0:
+                asyncio.run(manager.broadcast(Packet(
+                    players=players_to_send,
+                    status=Status(status="players_updated")
+                )))
         else:
             if previously_in_game:
                 log("[+] Game ended!")
                 previously_in_game = False
 
-                manager.broadcast(Packet(
+                asyncio.run(manager.broadcast(Packet(
                     status=Status(status="game_ended")
-                ))
+                )))
+                players = {}
 
             time.sleep(0.5)
             log("[+] Waiting for game to start...")

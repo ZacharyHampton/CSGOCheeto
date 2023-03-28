@@ -16,7 +16,10 @@ class ConnectionManager:
 
     async def broadcast(self, packet: Packet):
         for connection in self.active_connections:
-            await connection.send_json(packet.json())
+            try:
+                await connection.send_json(packet.json())
+            except RuntimeError:
+                continue
 
 
 manager = ConnectionManager()
