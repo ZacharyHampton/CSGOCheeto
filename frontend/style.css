@@ -1,0 +1,21 @@
+#map {
+    z-index: -1
+}
+.counter {
+    position: absolute;
+    outline: #FFFFFF solid 2px;
+    height: 15px;
+    width: 15px;
+    background-color: #355c7c;
+    border-radius: 50%;
+    display: inline-block;
+}
+.terrorist {
+    position: absolute;
+    outline: #4CAF50 solid 2px;
+    height: 15px;
+    width: 15px;
+    background-color: #b88539;
+    border-radius: 50%;
+    display: inline-block;
+}

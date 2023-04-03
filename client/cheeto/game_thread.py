@@ -73,10 +73,10 @@ def main_game_thread():
                     debug('[-] Skipping player 0x%X with dormant %d' % (player.address, dormant))
                     continue
 
-                if not player.is_valid():
-                    debug('[-] Skipping player 0x%X with health %d and life state %d' % (
-                        player.address, player.get_health(), player.get_life_state()))
-                    continue
+                #if not player.is_valid():
+                   # debug('[-] Skipping player 0x%X with health %d and life state %d' % (
+                       # player.address, player.get_health(), player.get_life_state()))
+                    #continue
 
                 name = str(memory.read(engine.get_player_info(index) + 0x10, ctypes.create_string_buffer(128)))
                 steam_id = str(memory.read(engine.get_player_info(index) + 0x94, ctypes.create_string_buffer(20)))
