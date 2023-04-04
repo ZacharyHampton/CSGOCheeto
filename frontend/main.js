@@ -64,8 +64,8 @@ socket.onmessage = (event) => {
     for (let player of data.players) {
         let playerElement = document.getElementById(player.steam_id)
 
-        let x = (parseInt(player.position.x) + 3230) / 6.4;
-        let y = -(parseInt(player.position.y) - 1713) / 6.4;
+        let x = (parseInt(player.position.x) + 2087) / 6.3;
+        let y = -(parseInt(player.position.y) - 3870) / 6.3;
         x = x.toString()
         y = y.toString()
 
