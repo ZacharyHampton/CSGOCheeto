@@ -58,25 +58,26 @@ socket.onmessage = (event) => {
     if (data.status === "game_ended") {
         drawing.clear("terrorist")
         drawing.clear("counter")
-    } else {
-        for (let player of data.players) {
-            let playerElement = document.getElementById(player.steam_id)
+    }
 
-            let x = (parseInt(player.position.x) + 3230) / 6.4;
-            let y = -(parseInt(player.position.y) - 1713) / 6.4;
-            x = x.toString()
-            y = y.toString()
 
-            if (playerElement === null) {
-                drawing.create(player.steam_id, player.team, x, y)
+    for (let player of data.players) {
+        let playerElement = document.getElementById(player.steam_id)
+
+        let x = (parseInt(player.position.x) + 3230) / 6.4;
+        let y = -(parseInt(player.position.y) - 1713) / 6.4;
+        x = x.toString()
+        y = y.toString()
+
+        if (playerElement === null) {
+            drawing.create(player.steam_id, player.team, x, y)
+        } else {
+            if (player.health > 0) {
+                drawing.update(playerElement, x, y, player.team)
             } else {
-                if (player.health > 0) {
-                    drawing.update(playerElement, x, y, player.team)
-                } else {
-                    playerElement.remove()
-                }
-
+                playerElement.remove()
             }
+
         }
     }
 }
