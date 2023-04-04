@@ -110,14 +110,13 @@ def main_game_thread():
                     players_to_send.append(packet_player)
                 else:
                     previous_player = players[steam_id].copy()
-
                     players[steam_id].health = health
+                    players[steam_id].name = name
+                    players[steam_id].team = packet_player.team
 
                     if player.get_life_state() == 0:
                         players[steam_id].position = packet_player.position
                         players[steam_id].weapon_id = weapon_id
-                        players[steam_id].name = name
-                        players[steam_id].team = packet_player.team
 
                     if previous_player.dict() != players[steam_id].dict():
                         log("[+] Player updated: 0x%X, health: %d, position: %s, name: %s" % (
