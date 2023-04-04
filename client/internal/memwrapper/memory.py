@@ -62,7 +62,7 @@ class Memory:
                     return self.process.module(module_name).base
                 else:
                     return pymem.process.module_from_name(self.process.process_handle, module_name).lpBaseOfDll
-            except AttributeError:
+            except (AttributeError, RuntimeError):
                 time.sleep(1)
                 continue
 
