@@ -62,22 +62,20 @@ socket.onmessage = (event) => {
 
 
     for (let player of data.players) {
-        let playerElement = document.getElementById(player.steam_id)
 
-        let x = (parseInt(player.position.x) + 2087) / 6.3;
-        let y = -(parseInt(player.position.y) - 3870) / 6.3;
-        x = x.toString()
-        y = y.toString()
+        if (player.health > 0) {
+            let playerElement = document.getElementById(player.steam_id)
 
-        if (playerElement === null) {
-            drawing.create(player.steam_id, player.team, x, y)
-        } else {
-            if (player.health > 0) {
-                drawing.update(playerElement, x, y, player.team)
-            } else {
-                playerElement.remove()
+            let x = (parseInt(player.position.x) + 2087) / 6.3;
+            let y = -(parseInt(player.position.y) - 3870) / 6.3;
+            x = x.toString()
+            y = y.toString()
+
+            if (playerElement === null) {
+                drawing.create(player.steam_id, player.team, x, y)
             }
-
+        } else {
+            playerElement.remove()
         }
     }
 }
