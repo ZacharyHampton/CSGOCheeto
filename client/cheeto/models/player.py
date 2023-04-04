@@ -7,6 +7,6 @@ class Player(BaseModel):
     name: str
     team: str
     health: int
-    position: Vector3
+    position: Vector3 | None
     weapon_id: int
     isLocalPlayer: bool
