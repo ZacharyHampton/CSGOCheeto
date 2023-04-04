@@ -67,16 +67,14 @@ def main_game_thread():
                 except NullPointerError:
                     continue
 
+                if player.address == 0:
+                    continue
+
                 isLocalPlayer = player.address == localPlayer.address
 
                 if dormant := player.is_dormant():
                     debug('[-] Skipping player 0x%X with dormant %d' % (player.address, dormant))
                     continue
-
-                #if not player.is_valid():
-                   # debug('[-] Skipping player 0x%X with health %d and life state %d' % (
-                       # player.address, player.get_health(), player.get_life_state()))
-                    #continue
 
                 name = str(memory.read(engine.get_player_info(index) + 0x10, ctypes.create_string_buffer(128)))
                 steam_id = str(memory.read(engine.get_player_info(index) + 0x94, ctypes.create_string_buffer(20)))
@@ -91,7 +89,11 @@ def main_game_thread():
                 except NullPointerError:
                     weapon_id = 0
 
-                team = player.get_team_number()
+                try:
+                    team = player.get_team_number()
+                except NullPointerError:
+                    team = None
+
                 position = player.get_bone_pos(10)
 
                 packet_player = Player(
@@ -114,10 +116,12 @@ def main_game_thread():
                     previous_player = players[steam_id].copy()
 
                     players[steam_id].health = health
-                    players[steam_id].position = packet_player.position
-                    players[steam_id].weapon_id = weapon_id
-                    players[steam_id].name = name
-                    players[steam_id].team = packet_player.team
+
+                    if player.get_life_state() == 0:
+                        players[steam_id].position = packet_player.position
+                        players[steam_id].weapon_id = weapon_id
+                        players[steam_id].name = name
+                        players[steam_id].team = packet_player.team
 
                     if previous_player.dict() != players[steam_id].dict():
                         log("[+] Player updated: 0x%X, health: %d, position: %s, name: %s" % (
