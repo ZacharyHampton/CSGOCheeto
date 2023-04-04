@@ -90,9 +90,10 @@ def main_game_thread():
                     weapon_id = 0
 
                 team = player.get_team_number()
-                if player.get_life_state() == 0:
+
+                try:
                     position = player.get_bone_pos(10)
-                else:
+                except NullPointerError:
                     position = None
 
                 packet_player = Player(
