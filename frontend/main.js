@@ -27,10 +27,10 @@ function Drawing(players) {
         playerElement.style.top = y + 'px';
         switch (team) {
             case "3":
-                player.className = "counter"
+                playerElement.className = "counter"
                 break
             case "2":
-                player.className = "terrorist"
+                playerElement.className = "terrorist"
                 break
             default:
                 return null;
