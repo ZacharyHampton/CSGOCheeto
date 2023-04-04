@@ -22,9 +22,27 @@ function Drawing(players) {
     };
 
 
-    this.update = (playerElement, x, y) => {
+    this.update = (playerElement, x, y, team) => {
         playerElement.style.left = x + 'px';
         playerElement.style.top = y + 'px';
+        switch (team) {
+            case "3":
+                player.className = "counter"
+                break
+            case "2":
+                player.className = "terrorist"
+                break
+            default:
+                return null;
+        }
+    }
+
+
+    this.clear = (className) => {
+        let elements = document.getELementsByClassName(className)
+        for (let element in elements) {
+            element.remove()
+        }
     }
 }
 
@@ -32,12 +50,18 @@ function Drawing(players) {
 
 const socket = new WebSocket("ws://127.0.0.1:8000/ws");
 socket.onmessage = (event) => {
-    let players = JSON.parse(event.data);
-    players = JSON.parse(players);
+    let data = JSON.parse(event.data);
+    data = JSON.parse(data);
 
-    let drawing = new Drawing(players)
+    let drawing = new Drawing(data)
 
-    for (let player of players.players) {
+    if (data.status === "game_ended") {
+        drawing.clear("terrorist")
+        drawing.clear("counter")
+    }
+
+
+    for (let player of data.players) {
         let playerElement = document.getElementById(player.steam_id)
 
         let x = (parseInt(player.position.x) + 3230) / 6.4;
@@ -49,7 +73,7 @@ socket.onmessage = (event) => {
             drawing.create(player.steam_id, player.team, x, y)
         } else {
             if (player.health > 0) {
-                drawing.update(playerElement, x, y)
+                drawing.update(playerElement, x, y, player.team)
             } else {
                 playerElement.remove()
             }
