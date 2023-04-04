@@ -90,7 +90,10 @@ def main_game_thread():
                     weapon_id = 0
 
                 team = player.get_team_number()
-                position = player.get_bone_pos(10)
+                if player.get_life_state() == 0:
+                    position = player.get_bone_pos(10)
+                else:
+                    position = None
 
                 packet_player = Player(
                         steam_id=steam_id,
