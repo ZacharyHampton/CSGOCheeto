@@ -89,11 +89,7 @@ def main_game_thread():
                 except NullPointerError:
                     weapon_id = 0
 
-                try:
-                    team = player.get_team_number()
-                except NullPointerError:
-                    team = None
-
+                team = player.get_team_number()
                 position = player.get_bone_pos(10)
 
                 packet_player = Player(
