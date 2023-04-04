@@ -1,13 +1,16 @@
-body, html {
+html, body {
     margin: 0;
-    height: 100%;
 }
 #players  {
-    max-height: 100vh;
-    margin:auto;
+    height: 100vh;
 }
 #map {
-    z-index: -1
+    height: 100%;
+    z-index: -1;
+}
+img {
+    max-height: 100%;
+    max-width: 100%;
 }
 .counter {
     position: absolute;
