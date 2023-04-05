@@ -10,3 +10,4 @@ class Player(BaseModel):
     position: Vector3 | None
     weapon_id: int
     isLocalPlayer: bool
+    is_dormant: bool

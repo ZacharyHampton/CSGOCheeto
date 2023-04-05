@@ -72,9 +72,7 @@ def main_game_thread():
 
                 isLocalPlayer = player.address == localPlayer.address
 
-                if dormant := player.is_dormant():
-                    debug('[-] Skipping player 0x%X with dormant %d' % (player.address, dormant))
-                    continue
+                is_dormant = player.is_dormant()
 
                 name = str(memory.read(engine.get_player_info(index) + 0x10, ctypes.create_string_buffer(128)))
                 steam_id = str(memory.read(engine.get_player_info(index) + 0x94, ctypes.create_string_buffer(20)))
@@ -103,7 +101,8 @@ def main_game_thread():
                         health=health,
                         position=position,
                         weapon_id=weapon_id,
-                        isLocalPlayer=isLocalPlayer
+                        isLocalPlayer=isLocalPlayer,
+                        is_dormant=is_dormant
                     )
 
                 if steam_id not in players.keys():
@@ -119,6 +118,7 @@ def main_game_thread():
                     players[steam_id].team = packet_player.team
                     players[steam_id].position = packet_player.position
                     players[steam_id].weapon_id = weapon_id
+                    players[steam_id].is_dormant = is_dormant
 
                     if previous_player.dict() != players[steam_id].dict():
                         log("[+] Player updated: 0x%X, health: %d, position: %s, name: %s" % (
